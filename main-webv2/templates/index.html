@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+{% block title %}RC Car — Telemetry & Control Center{% endblock %}
+
+{% block body %}
+<div class="index-wrap">
+
+  <!-- ── Top HUD Status Bar ────────────────────────────────────────────── -->
+  <div class="top-hud">
+    <div class="hud-item">
+      <i class="ph ph-cpu"></i> SYSTEM STATUS: <span class="text-green">ONLINE</span>
+    </div>
+    <div class="hud-item hud-broker">
+      <i class="ph ph-broadcast"></i> <span id="broker-display"></span>
+    </div>
+  </div>
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <header class="site-header">
+    
+    <!-- SVG UCIC Box -->
+    <div class="ucic-wrap">
+      <div class="logo-box" id="logoBox">
+        <div class="sweep2"></div>
+        <div class="glow-outer"></div>
+        <div class="glow-inner"></div>
+        <div class="corner tl"></div>
+        <div class="corner tr"></div>
+        <div class="corner br"></div>
+        <div class="corner bl"></div>
+      
+        <svg class="ucic-svg" viewBox="0 0 268 92" xmlns="http://www.w3.org/2000/svg">
+          <g stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="3">
+            <path class="line" d="M 8,10 L 8,65 Q 8,82 34,82 Q 60,82 60,65 L 60,10"/>
+            <path class="line" d="M 130,22 C 118,8 96,8 86,20 C 76,32 76,58 86,70 C 96,82 118,82 130,68"/>
+            <path class="line" d="M 150,10 L 180,10"/>
+            <path class="line" d="M 165,10 L 165,82"/>
+            <path class="line" d="M 150,82 L 180,82"/>
+            <path class="line" d="M 256,22 C 244,8 222,8 212,20 C 202,32 202,58 212,70 C 222,82 244,82 256,68"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Center Title -->
+    <div class="header-content">
+      <div class="header-eyebrow"><i class="ph ph-gear-six"></i> DRIVE MODE SELECTOR</div>
+      <h1 class="site-title">RC CAR</h1>
+      <p class="site-sub">Pilih metode kontrol untuk mengoperasikan kendaraan</p>
+      
+      <!-- Animasi berlian -->
+      <div class="header-diamonds">
+        <div class="hdiamond"></div>
+        <div class="hdiamond"></div>
+        <div class="hdiamond"></div>
+        <div class="hdiamond"></div>
+        <div class="hdiamond"></div>
+        <div class="hdiamond"></div>
+        <div class="hdiamond"></div>
+      </div>
+    </div>
+
+    <!-- Info Box Right -->
+    <div class="info-wrap">
+      <div class="logo-box" id="infoBox">
+        <div class="sweep2"></div>
+        <div class="glow-outer"></div>
+        <div class="glow-inner"></div>
+        <div class="corner tl"></div>
+        <div class="corner tr"></div>
+        <div class="corner br"></div>
+        <div class="corner bl"></div>
+      
+        <div class="info-content">
+          <div class="info-name">UCIC Agentic AI</div>
+          <div class="info-divider"></div>
+          <div class="info-city">Cirebon</div>
+          <div class="info-prodi">Teknik Informatika</div>
+        </div>
+      </div>
+    </div>
+
+  </header>
+
+  <!-- ── Grid Kontroler (Glassmorphism Cards) ───────────────────────────── -->
+  <main class="ctrl-grid">
+    {% for ctrl in controllers %}
+    <a href="/controller/{{ ctrl.id }}" class="ctrl-card" style="--accent: {{ ctrl.color }}; --on-accent: {{ ctrl.on_color }}">
+      <div class="card-glass-glow"></div>
+      <div class="card-stripe"></div>
+
+      <div class="card-body">
+        <div class="card-top-bar">
+          <span class="card-status-badge">READY</span>
+        </div>
+        
+        <div class="card-name">{{ ctrl.name }}</div>
+        <p class="card-desc">{{ ctrl.desc }}</p>
+
+        <div class="card-footer-meta">
+          <span class="launch-label">LAUNCH CONTROLLER</span>
+          <i class="ph ph-arrow-right card-arrow-icon"></i>
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </main>
+
+  <footer class="site-footer">
+    <span>RC CAR COCKPIT UI</span> &nbsp;•&nbsp; 
+    <span>MQTT WEB-SOCKETS</span> &nbsp;•&nbsp; 
+    <span id="muhayara-text">Muhayara</span>
+  </footer>
+</div>
+
+<script>
+  // Tampilkan broker dari URL saat ini
+  const brokerRaw = "{{ mqtt_broker }}";
+  const broker = brokerRaw.replace('wss://', '').replace('ws://', '').split('/')[0];
+  document.getElementById('broker-display').textContent = 'Broker: ' + broker;
+</script>
+
+<script type="module">
+  import { animate, svg, stagger } from 'https://esm.sh/animejs';
+ 
+  animate(svg.createDrawable('.line'), {
+    draw: [
+      { to: '0 1', duration: 1000, ease: 'inOutQuad' },
+      { to: '0 1', duration: 5000 },
+      { to: '1 1', duration: 1000, ease: 'inOutQuad' },
+    ],
+    delay: stagger(100),
+    loopDelay: 1000,
+    loop: true,
+  });
+</script>
+
+<script type="module">
+  import { animate, scrambleText } from 'https://esm.sh/animejs';
+ 
+  animate('#muhayara-text', {
+    innerHTML: scrambleText({
+      text: 'Muhayara',
+      chars: 'Muhayaraabcdefghijklmnopqrstuvwxyz0123456789',
+      speed: 0.9,
+      from: 'random',
+    }),
+    loop: true,
+    loopDelay: 2000,
+    duration: 1000,
+  });
+</script>
+
+<script type="module">
+  import { animate, stagger } from 'https://esm.sh/animejs';
+ 
+  animate('.hdiamond', {
+    boxShadow: [
+      { to: stagger([1, .25], {
+          modifier: v => `0 0 ${v * 25}px ${v * 10}px currentColor`,
+          from: 'center'
+        })
+      },
+      { to: 0 },
+    ],
+    delay: stagger(120, { from: 'center' }),
+    loop: true,
+  });
+</script>
+
+<script>  
+  const box = document.getElementById('logoBox');
+  
+  if(box) {
+    document.addEventListener('mousemove', e => {
+      const rect = box.getBoundingClientRect();
+      const inside =
+        e.clientX >= rect.left && e.clientX <= rect.right &&
+        e.clientY >= rect.top  && e.clientY <= rect.bottom;
+    
+      if (inside) {
+        box.style.setProperty('--glow-x', ((e.clientX - rect.left) / rect.width  * 100).toFixed(1) + '%');
+        box.style.setProperty('--glow-y', ((e.clientY - rect.top)  / rect.height * 100).toFixed(1) + '%');
+      }
+    });
+    
+    document.addEventListener('mouseleave', () => {
+      box.style.setProperty('--glow-x', '50%');
+      box.style.setProperty('--glow-y', '50%');
+    });
+    
+    box.addEventListener('click', e => {
+      const rect = box.getBoundingClientRect();
+      const ripple = document.createElement('div');
+      ripple.className = 'ripple';
+      ripple.style.left = (e.clientX - rect.left) + 'px';
+      ripple.style.top = (e.clientY - rect.top) + 'px';
+      box.appendChild(ripple);
+      ripple.addEventListener('animationend', () => ripple.remove());
+    });
+  }
+</script>
+{% endblock %}
